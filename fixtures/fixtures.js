@@ -1,4 +1,4 @@
-import { AuthAPI } from "../pages/api/authAPI";
+import { AuthAPI } from "../pages/api/AuthAPI";
 import { BookingAPI } from "../pages/api/BookingAPI";
 import { CartPage } from "../pages/ui/CartPage";
 import { CheckoutPage } from "../pages/ui/CheckoutPage";
