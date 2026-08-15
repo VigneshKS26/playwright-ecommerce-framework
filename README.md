@@ -10,51 +10,51 @@ The project combines front-end testing using SauceDemo and API testing using Res
 
 #### Login
 
-* Valid login
-* Invalid login
-* Locked user validation
-* Empty username validation
-* Empty password validation
+- Valid login
+- Invalid login
+- Locked user validation
+- Empty username validation
+- Empty password validation
 
 #### Products
 
-* Product listing verification
-* Product detail verification
-* Product image verification
-* Inventory validation
-* Product sorting
+- Product listing verification
+- Product detail verification
+- Product image verification
+- Inventory validation
+- Product sorting
 
 #### Cart
 
-* Add single product
-* Add multiple products
-* Remove products
-* Verify cart badge count
-* Continue shopping flow
+- Add single product
+- Add multiple products
+- Remove products
+- Verify cart badge count
+- Continue shopping flow
 
 #### Checkout
 
-* Empty field validations
-* Checkout cancellation
-* End-to-end order completion
+- Empty field validations
+- Checkout cancellation
+- End-to-end order completion
 
 ### API Automation
 
 #### Authentication
 
-* Valid token generation
-* Invalid credentials
-* Missing fields
-* Empty request body
-* Invalid content type
+- Valid token generation
+- Invalid credentials
+- Missing fields
+- Empty request body
+- Invalid content type
 
 #### Booking CRUD
 
-* Create booking
-* Retrieve booking
-* Full update
-* Partial update
-* Delete booking
+- Create booking
+- Retrieve booking
+- Full update
+- Partial update
+- Delete booking
 
 #### End-to-End API Flow
 
@@ -94,10 +94,10 @@ GitHub Actions executes UI and API suites as separate jobs and uploads execution
 
 ## Tech Stack
 
-* Playwright
-* JavaScript (ES Modules)
-* dotenv
-* GitHub Actions
+- Playwright
+- JavaScript (ES Modules)
+- dotenv
+- GitHub Actions
 
 ## Project Structure
 
@@ -123,11 +123,11 @@ npx playwright test
 
 ## Test Coverage
 
-* 60+ automated tests
-* UI validations
-* API CRUD operations
-* Positive and negative scenarios
-* End-to-end workflows
+- 60+ automated tests
+- UI validations
+- API CRUD operations
+- Positive and negative scenarios
+- End-to-end workflows
 
 ## Skills Demonstrated
 
@@ -142,8 +142,15 @@ npx playwright test
 • Reusable Test Data Management
 • GitHub Actions CI/CD
 
+## Screenshots
+
+### Playwright Execution Report
+
+The framework contains UI and API automation tests executed through Playwright Test Runner. The report below shows successful execution of all test scenarios.
+
+![Playwright Report](screenshots/playwright-report.png)
+
 ## Author
 
 Vignesh K S
 QA Engineer | Playwright Automation
-
