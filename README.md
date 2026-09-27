@@ -1,156 +1,200 @@
 # Playwright E-Commerce Automation Framework
 
-UI and API automation framework built with Playwright and JavaScript.
+This project started as a Playwright UI automation framework for SauceDemo and gradually evolved into a complete automation framework covering UI testing, API testing, API + UI integration testing, network interception, and CI/CD execution through GitHub Actions.
 
-The project combines front-end testing using SauceDemo and API testing using Restful-Booker within a single automation framework.
+The goal of this project was not only to automate test cases but also to practice building a maintainable framework using Page Object Model, reusable fixtures, centralized test data, and API abstraction layers.
 
-## What It Tests
+---
+
+## What This Project Covers
 
 ### UI Automation
 
-#### Login
+Automated test coverage for:
 
-- Valid login
-- Invalid login
-- Locked user validation
-- Empty username validation
-- Empty password validation
-
-#### Products
-
-- Product listing verification
-- Product detail verification
-- Product image verification
-- Inventory validation
-- Product sorting
-
-#### Cart
-
-- Add single product
-- Add multiple products
-- Remove products
-- Verify cart badge count
-- Continue shopping flow
-
-#### Checkout
-
-- Empty field validations
-- Checkout cancellation
-- End-to-end order completion
+- Login functionality
+- Product listing and sorting
+- Product details validation
+- Cart operations
+- Checkout flow
+- Negative validations
 
 ### API Automation
 
-#### Authentication
+Automated API testing using Restful Booker:
 
-- Valid token generation
-- Invalid credentials
-- Missing fields
-- Empty request body
-- Invalid content type
+- Authentication
+- Create Booking
+- Retrieve Booking
+- Update Booking
+- Partial Update
+- Delete Booking
+- End-to-End CRUD workflow
 
-#### Booking CRUD
+### Data Driven Testing (DDT)
 
-- Create booking
-- Retrieve booking
-- Full update
-- Partial update
-- Delete booking
+Negative booking scenarios are maintained separately in test-data files and executed dynamically, making the tests easier to maintain and extend.
 
-#### End-to-End API Flow
+### API + UI Integration Testing
 
-Authenticate → Create Booking → Update Booking → Partial Update → Delete Booking → Verify Deletion
+One of the integration scenarios creates data through an API request and then verifies the same data from the UI.
 
-## Framework Features
+This approach is commonly used in real projects because:
 
-### Page Object Model
+- Test setup becomes faster
+- UI dependency is reduced
+- End-to-end validation becomes stronger
+
+### Network Interception & Mocking
+
+Playwright route interception is used to modify API responses before they reach the browser.
+
+Example use case:
+
+- Intercept product API response
+- Replace product name with mocked value
+- Verify UI displays mocked data
+
+This helps test frontend behavior without depending on backend changes.
+
+---
+
+## Framework Structure
 
 ```text
-BasePage
- ├── LoginPage
- ├── ProductPage
- ├── CartPage
- └── CheckoutPage
+pages
+├── ui
+│   ├── LoginPage
+│   ├── ProductPage
+│   ├── CartPage
+│   └── CheckoutPage
+│
+└── api
+    ├── AuthAPI
+    └── BookingAPI
+
+fixtures
+└── fixtures.js
+
+test-data
+└── reusable test data
+
+tests
+├── ui
+├── api
+└── integration
 ```
+
+---
+
+## Design Approach
+
+### Page Object Model (POM)
+
+UI interactions are separated into dedicated page classes to improve readability and maintainability.
 
 ### API Layer
 
-```text
-BaseAPI
- ├── AuthAPI
- └── BookingAPI
-```
+API requests are encapsulated inside API classes instead of being written directly inside test files.
 
-### Unified Fixtures
+### Shared Fixtures
 
-UI page objects and API clients are injected through shared fixtures.
+Custom fixtures provide:
 
-### Test Data Management
+- Page Objects
+- API Clients
+- Authentication Tokens
+- Common Headers
 
-Centralized users, headers, and payload files support reusable and maintainable test data.
+This keeps test files focused on test logic instead of setup code.
 
-### CI/CD
+---
 
-GitHub Actions executes UI and API suites as separate jobs and uploads execution reports as artifacts.
+## CI/CD
+
+The project uses GitHub Actions to run automation suites automatically.
+
+Current pipeline:
+
+- Install dependencies
+- Cache Playwright browsers
+- Execute UI tests
+- Execute API tests
+- Upload Playwright reports
+
+---
 
 ## Tech Stack
 
 - Playwright
-- JavaScript (ES Modules)
-- dotenv
+- JavaScript
+- Node.js
+- REST API Testing
 - GitHub Actions
+- dotenv
 
-## Project Structure
+---
 
-```text
-fixtures/
-pages/
-tests/
-test-data/
-.github/workflows/
-```
+## Running The Tests
 
-## Running Locally
+Install dependencies:
 
 ```bash
 npm install
+```
 
+Run UI tests:
+
+```bash
 npx playwright test tests/ui
+```
 
+Run API tests:
+
+```bash
 npx playwright test tests/api
+```
 
+Run Integration tests:
+
+```bash
+npx playwright test tests/integration
+```
+
+Run all tests:
+
+```bash
 npx playwright test
 ```
 
-## Test Coverage
+---
 
-- 60+ automated tests
-- UI validations
-- API CRUD operations
-- Positive and negative scenarios
-- End-to-end workflows
+## What I Learned While Building This
 
-## Skills Demonstrated
+- Playwright UI Automation
+- API Testing using Playwright Request Context
+- Framework Design
+- Page Object Model
+- Custom Fixtures
+- Data Driven Testing
+- API + UI Integration Testing
+- Network Interception & Mocking
+- GitHub Actions CI/CD
+- Test Maintainability Best Practices
 
-• UI Test Automation
-• API Test Automation
-• CRUD API Testing
-• Negative API Testing
-• End-to-End API Workflow Testing
-• Page Object Model (POM)
-• API Layer Abstraction
-• Fixture Composition
-• Reusable Test Data Management
-• GitHub Actions CI/CD
+---
 
-## Screenshots
+## Playwright Report
 
-### Playwright Execution Report
+![UI and API Report](screenshots/playwright-report.png)
+![Integration](screenshots/playwright-report_Integration.png)
 
-The framework contains UI and API automation tests executed through Playwright Test Runner. The report below shows successful execution of all test scenarios.
-
-![Playwright Report](screenshots/playwright-report.png)
+---
 
 ## Author
 
-Vignesh K S
-QA Engineer | Playwright Automation
+**Vignesh K S**
+
+QA Automation Engineer
+
+Playwright | API Testing | JavaScript | Selenium | CI/CD
