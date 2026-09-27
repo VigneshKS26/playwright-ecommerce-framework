@@ -56,5 +56,4 @@ export class LoginPage extends BasePage {
     await this.loginButton.click();
     return await this.errorMessage.textContent();
   } */
-  
 }

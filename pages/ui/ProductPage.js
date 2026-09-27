@@ -1,4 +1,5 @@
 import { BasePage } from "./BasePage";
+import { expect } from "@playwright/test";
 export class ProductPage extends BasePage {
   constructor(page) {
     super(page);
@@ -14,26 +15,29 @@ export class ProductPage extends BasePage {
     this.backToProductButton = page.locator("#back-to-products");
   }
 
-   getProductList() {
+  getProductList() {
     return this.inventoryList;
   }
-   getProductName() {
-    return  this.productName;
+  getProductName() {
+    return this.productName;
   }
   async getProductPrice() {
     return await this.productPrice.textContent();
   }
-   getProductImage() {
+  getProductImage() {
     return this.productImage;
   }
-   getAllProductsImages() {
-   return this.productImage;
-
+  getAllProductsImages() {
+    return this.productImage;
   }
-   getAllProductsPrices() {
+  getAllProductsPrices() {
     return this.productPrice;
   }
+  async waitForInventoryToLoad() {
+    await expect(this.inventoryList).toBeVisible();
+  }
   async getInventoryCount() {
+    await this.waitForInventoryToLoad();
     return await this.productList.count();
   }
   async getSortingListA_Z() {
@@ -98,9 +102,7 @@ export class ProductPage extends BasePage {
   }
   async navigateToProductDetails() {
     await this.productName.filter({ hasText: "Sauce Labs Backpack" }).click();
-    return {url:this.page.url(),
-      button:this.backToProductButton};
-    
+    return { url: this.page.url(), button: this.backToProductButton };
   }
   async navigateBackToProductList() {
     await this.backToProductButton.click();

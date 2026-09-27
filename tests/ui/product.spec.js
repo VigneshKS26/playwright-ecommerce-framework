@@ -9,7 +9,7 @@ test.beforeEach("Launch Site and Login", async ({ loginPage }) => {
 test("Verify product listing is displayed", async ({ productPage }) => {
   console.log("Verifying product list");
   const products = productPage.getProductList();
-  expect(products).toBeVisible();
+  await expect(products).toBeVisible();
 });
 
 test.describe("Verify first product informations", () => {

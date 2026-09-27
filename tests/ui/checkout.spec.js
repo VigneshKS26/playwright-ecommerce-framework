@@ -62,7 +62,7 @@ test("Enter valid informations and continue", async ({ checkoutPage }) => {
 
   const title = await checkoutPage.getPageTitle();
 
-  expect(title).toContain("Overview");
+  expect(title).toContain("Checkout");
 
   console.log("Verifying product information before finish");
 
