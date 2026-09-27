@@ -1,4 +1,5 @@
 import { BasePage } from "./BasePage";
+import { expect } from "@playwright/test";
 export class CartPage extends BasePage {
   constructor(page) {
     super(page);
@@ -38,8 +39,12 @@ export class CartPage extends BasePage {
   }
   async goToCart() {
     await this.cartButton.click();
+
+    await this.page.waitForURL(/cart/);
   }
   async productsCountInCart() {
+    await expect(this.productsInCart.first()).toBeVisible();
+
     return await this.productsInCart.count();
   }
   async productsQuantityInCart() {
@@ -57,7 +62,7 @@ export class CartPage extends BasePage {
     await this.continueShoppingButton.click();
   }
   async getProductNameInCart() {
-    return await this.productNameInCart.textContent();
+    return await this.productNameInCart.first().textContent();
   }
   cartPageURL() {
     return this.page.url();

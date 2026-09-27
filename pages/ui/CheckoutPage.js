@@ -35,13 +35,12 @@ export class CheckoutPage extends BasePage {
     return await this.pageTitle.textContent();
   }
   async getProductNameBeforeFinish() {
-    return await this.productNameBeforeFinish.textContent()
+    return await this.productNameBeforeFinish.first().textContent();
   }
   async clickOnFinish() {
     await this.finishButton.click();
   }
   async getCompleteOrderMessage() {
     return await this.orderMessage.textContent();
-    
   }
 }
