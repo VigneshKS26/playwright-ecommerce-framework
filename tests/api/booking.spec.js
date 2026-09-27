@@ -249,14 +249,14 @@ test.describe("Partial update Booking", () => {
 });
 
 test("Delete existing booking", async ({ authHeader, bookingAPI }) => {
-  const response = await bookingAPI.deleteBooking(1, authHeader);
+  const response = await bookingAPI.deleteBooking(4, authHeader);
   expect(response.status()).toBe(201);
 });
 
 test("Delete already deleted booking", async ({ authHeader, bookingAPI }) => {
-  const response1 = await bookingAPI.deleteBooking(2, authHeader);
+  const response1 = await bookingAPI.deleteBooking(3, authHeader);
   expect(response1.status()).toBe(201);
-  const response2 = await bookingAPI.deleteBooking(2, authHeader);
+  const response2 = await bookingAPI.deleteBooking(3, authHeader);
   expect(response2.status()).toBe(405);
 });
 test("Delete invalid booking ID", async ({ authHeader, bookingAPI }) => {
