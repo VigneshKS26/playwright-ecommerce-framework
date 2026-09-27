@@ -1,6 +1,10 @@
 import { test, expect } from "../../fixtures/fixtures";
+
 import { users } from "../../test-data/users";
 import { headers } from "../../test-data/headers";
+import { invalidAuthData } from "../../test-data/auth";
+
+import { validateBadCredentials } from "../../utils/assertions";
 
 test("Generate Token", async ({ authAPI }) => {
   const response = await authAPI.authenticate(
@@ -15,56 +19,12 @@ test("Generate Token", async ({ authAPI }) => {
   expect(body.token).toBeTruthy();
 });
 
-test("Verify Invalid username", async ({ authAPI }) => {
-  const response = await authAPI.authenticate(
-    users.invalidUsername,
-    users.apiPassword,
-  );
+invalidAuthData.forEach((data) => {
+  test(`Verify ${data.name}`, async ({ authAPI }) => {
+    const response = await authAPI.authenticate(data.username, data.password);
 
-  expect(response.status()).toBe(200);
-
-  const body = await response.json();
-
-  expect(body.reason).toContain("Bad credentials");
-});
-
-test("Verify Invalid password", async ({ authAPI }) => {
-  const response = await authAPI.authenticate(
-    users.apiUsername,
-    users.invalidPassword,
-  );
-
-  expect(response.status()).toBe(200);
-
-  const body = await response.json();
-
-  expect(body.reason).toContain("Bad credentials");
-});
-
-test("Verify Invalid username and password", async ({ authAPI }) => {
-  const response = await authAPI.authenticate(
-    users.invalidUsername,
-    users.invalidPassword,
-  );
-
-  expect(response.status()).toBe(200);
-
-  const body = await response.json();
-
-  expect(body.reason).toContain("Bad credentials");
-});
-
-test("Verify Empty request body", async ({ authAPI }) => {
-  const response = await authAPI.authenticate(
-    users.emptyField,
-    users.emptyField,
-  );
-
-  expect(response.status()).toBe(200);
-
-  const body = await response.json();
-
-  expect(body.reason).toContain("Bad credentials");
+    await validateBadCredentials(response, data);
+  });
 });
 
 test("Verify Missing required fields", async ({ authAPI }) => {

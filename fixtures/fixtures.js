@@ -1,3 +1,5 @@
+import { users } from "../test-data/users";
+import { headers } from "../test-data/headers";
 import { AuthAPI } from "../pages/api/AuthAPI";
 import { BookingAPI } from "../pages/api/BookingAPI";
 import { CartPage } from "../pages/ui/CartPage";
@@ -31,5 +33,16 @@ export const test = base.extend({
   bookingAPI: async ({ request }, use) => {
     const bookingAPI = new BookingAPI(request);
     await use(bookingAPI);
+  },
+  authToken: async ({ authAPI }, use) => {
+    const token = await authAPI.getAuth(users.apiUsername, users.apiPassword);
+
+    await use(token);
+  },
+
+  authHeader: async ({ authToken }, use) => {
+    const header = headers.cookie(authToken);
+
+    await use(header);
   },
 });
