@@ -62,3 +62,39 @@ jobs:
         with:
           name: api-playwright-report
           path: playwright-report/
+
+  integration-tests:
+    runs-on: ubuntu-latest
+
+    env:
+      API_URL: ${{ secrets.API_URL }}
+      API_KEY: ${{ secrets.API_KEY }}
+      PROJECT_URL: ${{ secrets.PROJECT_URL }}
+      EMAIL: ${{ secrets.EMAIL }}
+      PASSWORD: ${{ secrets.PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - run: npm ci
+
+      - run: npx playwright install --with-deps
+
+      - run: npx playwright test tests/integration
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-playwright-report
+          path: playwright-report/
