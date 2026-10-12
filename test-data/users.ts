@@ -8,4 +8,4 @@ export const users = {
   apiPassword: "password123",
   invalidPassword: "invalid",
   emptyField: "",
-};
+} as const;

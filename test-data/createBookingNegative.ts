@@ -4,7 +4,7 @@ export const createBookingNegativeData = [
   {
     name: "without firstname",
     payload: (() => {
-      const pld = { ...payload };
+      const pld: Record<string, unknown> = { ...payload };
       delete pld.firstname;
       return pld;
     })(),
@@ -14,7 +14,7 @@ export const createBookingNegativeData = [
   {
     name: "without lastname",
     payload: (() => {
-      const pld = { ...payload };
+      const pld: Record<string, unknown> = { ...payload };
       delete pld.lastname;
       return pld;
     })(),
@@ -26,4 +26,4 @@ export const createBookingNegativeData = [
     payload: {},
     status: 500,
   },
-];
+] as const;

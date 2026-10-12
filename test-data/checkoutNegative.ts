@@ -20,4 +20,4 @@ export const checkoutNegativeData = [
     zipCode: "",
     error: "Postal Code is required",
   },
-];
+] as const;

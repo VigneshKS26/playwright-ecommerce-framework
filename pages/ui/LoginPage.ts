@@ -1,7 +1,16 @@
+import type { Locator, Page } from "@playwright/test";
 import { BasePage } from "./BasePage";
 
 export class LoginPage extends BasePage {
-  constructor(page) {
+  inputUsername: Locator;
+  inputPassword: Locator;
+  loginButton: Locator;
+  menuButton: Locator;
+  logoutOption: Locator;
+  errorMessage: Locator;
+  pageTitle: Locator;
+
+  constructor(page: Page) {
     super(page);
     this.inputUsername = page.getByPlaceholder("Username");
     this.inputPassword = page.getByPlaceholder("Password");
@@ -12,18 +21,18 @@ export class LoginPage extends BasePage {
     this.pageTitle = page.locator(".title");
   }
 
-  async loginUser(username, password) {
+  async loginUser(username: string, password: string): Promise<void> {
     await this.inputUsername.fill(username);
     await this.inputPassword.fill(password);
     await this.loginButton.click();
   }
-  async getTitle() {
+  async getTitle(): Promise<string | null> {
     return await this.pageTitle.textContent();
   }
-  async getErrorMessage() {
+  async getErrorMessage(): Promise<string | null> {
     return await this.errorMessage.textContent();
   }
-  async logout() {
+  async logout(): Promise<void> {
     await this.menuButton.click();
     await this.logoutOption.click();
   }

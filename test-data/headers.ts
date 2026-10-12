@@ -7,7 +7,7 @@ export const headers = {
     "Content-Type": "application/json",
   },
 
-  cookie: (token) => ({
+  cookie: (token: string) => ({
     Cookie: `token=${token}`,
   }),
-};
+} as const;

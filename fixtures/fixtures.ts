@@ -7,8 +7,20 @@ import { CheckoutPage } from "../pages/ui/CheckoutPage";
 import { LoginPage } from "../pages/ui/LoginPage";
 import { ProductPage } from "../pages/ui/ProductPage";
 import { test as base } from "@playwright/test";
+
+interface TestFixtures {
+  loginPage: LoginPage;
+  productPage: ProductPage;
+  cartPage: CartPage;
+  checkoutPage: CheckoutPage;
+  authAPI: AuthAPI;
+  bookingAPI: BookingAPI;
+  authToken: string;
+  authHeader: ReturnType<typeof headers.cookie>;
+}
+
 export { expect } from "@playwright/test";
-export const test = base.extend({
+export const test = base.extend<TestFixtures>({
   loginPage: async ({ page }, use) => {
     const loginPage = new LoginPage(page);
     await use(loginPage);

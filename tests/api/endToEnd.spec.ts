@@ -3,10 +3,43 @@ import { users } from "../../test-data/users";
 import { payload } from "../../test-data/payload";
 import { headers } from "../../test-data/headers";
 
+interface AuthResponseBody {
+  token: string;
+}
+
+interface CreatedBookingResponseBody {
+  bookingid: number;
+  booking: {
+    firstname: string;
+    lastname: string;
+    totalprice: number;
+  };
+}
+
+interface UpdatedBookingResponseBody {
+  firstname: string;
+  lastname: string;
+  totalprice: number;
+  depositpaid: boolean;
+  additionalneeds: string;
+}
+
+interface MutableBookingPayload extends Record<string, unknown> {
+  firstname: string;
+  lastname: string;
+  totalprice: number;
+  depositpaid: boolean;
+  bookingdates: {
+    checkin: string;
+    checkout: string;
+  };
+  additionalneeds: string;
+}
+
 test("End to end API testing", async ({ authAPI, bookingAPI }) => {
-  let token;
-  let bookingId;
-  let cookie;
+  let token = "";
+  let bookingId = 0;
+  let cookie = headers.cookie("");
 
   await test.step("Generate authentication token", async () => {
     const authResponse = await authAPI.authenticate(
@@ -16,7 +49,7 @@ test("End to end API testing", async ({ authAPI, bookingAPI }) => {
 
     expect(authResponse.status()).toBe(200);
 
-    const authResponseBody = await authResponse.json();
+    const authResponseBody: AuthResponseBody = await authResponse.json();
 
     token = authResponseBody.token;
 
@@ -28,7 +61,8 @@ test("End to end API testing", async ({ authAPI, bookingAPI }) => {
 
     expect(createBookingResponse.status()).toBe(200);
 
-    const createBookingBody = await createBookingResponse.json();
+    const createBookingBody: CreatedBookingResponseBody =
+      await createBookingResponse.json();
 
     bookingId = createBookingBody.bookingid;
 
@@ -43,7 +77,7 @@ test("End to end API testing", async ({ authAPI, bookingAPI }) => {
   });
 
   await test.step("Update booking", async () => {
-    const pld = { ...payload };
+    const pld: MutableBookingPayload = { ...payload };
 
     pld.firstname = "Yuki";
     pld.lastname = "Gai";
@@ -59,7 +93,8 @@ test("End to end API testing", async ({ authAPI, bookingAPI }) => {
 
     expect(updatedResponse.status()).toBe(200);
 
-    const updatedResponseBody = await updatedResponse.json();
+    const updatedResponseBody: UpdatedBookingResponseBody =
+      await updatedResponse.json();
 
     expect(updatedResponseBody.firstname).toBe("Yuki");
     expect(updatedResponseBody.totalprice).toBe(1234);
@@ -80,7 +115,8 @@ test("End to end API testing", async ({ authAPI, bookingAPI }) => {
 
     expect(parUpresponse.status()).toBe(200);
 
-    const parUpresponseBody = await parUpresponse.json();
+    const parUpresponseBody: Pick<UpdatedBookingResponseBody, "lastname"> =
+      await parUpresponse.json();
 
     expect(parUpresponseBody.lastname).toBe("Gim");
   });

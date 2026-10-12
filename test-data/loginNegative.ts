@@ -1,4 +1,5 @@
 import { users } from "../test-data/users";
+
 export const loginNegative = [
   {
     name: "Invalid Username and Password",
@@ -24,4 +25,4 @@ export const loginNegative = [
     password: users.password,
     error: "locked out",
   },
-];
+] as const;

@@ -6,6 +6,11 @@ import { invalidAuthData } from "../../test-data/auth";
 
 import { validateBadCredentials } from "../../utils/assertions";
 
+interface AuthResponseBody {
+  token?: string;
+  reason?: string;
+}
+
 test("Generate Token", async ({ authAPI }) => {
   const response = await authAPI.authenticate(
     users.apiUsername,
@@ -14,7 +19,7 @@ test("Generate Token", async ({ authAPI }) => {
 
   expect(response.status()).toBe(200);
 
-  const body = await response.json();
+  const body: AuthResponseBody = await response.json();
 
   expect(body.token).toBeTruthy();
 });
@@ -32,7 +37,7 @@ test("Verify Missing required fields", async ({ authAPI }) => {
 
   expect(response.status()).toBe(200);
 
-  const body = await response.json();
+  const body: AuthResponseBody = await response.json();
 
   expect(body.reason).toContain("Bad credentials");
 });

@@ -1,21 +1,41 @@
 import { test, expect } from "@playwright/test";
+import type { Page } from "@playwright/test";
 import dotenv from "dotenv";
 
 dotenv.config({ path: ".env" });
 
+interface ProductCollectionResponse {
+  data: Array<{
+    data: {
+      name: string;
+      [field: string]: unknown;
+    };
+  }>;
+}
+
+function requiredEnvironmentVariable(name: string): string {
+  const value = process.env[name];
+  if (value === undefined) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
+
 test.describe("API + UI + Network Interception", () => {
-  async function loginAndOpenSampleData(page) {
-    await page.goto(process.env.PROJECT_URL);
+  async function loginAndOpenSampleData(page: Page): Promise<void> {
+    await page.goto(requiredEnvironmentVariable("PROJECT_URL"));
 
     await page.getByText("Sign in").click();
 
-    await page.getByLabel("Email address").fill(process.env.EMAIL);
+    await page
+      .getByLabel("Email address")
+      .fill(requiredEnvironmentVariable("EMAIL"));
 
     await page.getByRole("button", { name: "Continue", exact: true }).click();
 
     await page
       .getByRole("textbox", { name: "Password" })
-      .fill(process.env.PASSWORD);
+      .fill(requiredEnvironmentVariable("PASSWORD"));
 
     await page.getByRole("button", { name: "Continue", exact: true }).click();
 
@@ -38,14 +58,17 @@ test.describe("API + UI + Network Interception", () => {
       in_stock: true,
     };
 
-    const createResponse = await request.post(process.env.API_URL, {
-      data: {
-        data: payload,
+    const createResponse = await request.post(
+      requiredEnvironmentVariable("API_URL"),
+      {
+        data: {
+          data: payload,
+        },
+        headers: {
+          "x-api-key": requiredEnvironmentVariable("API_KEY"),
+        },
       },
-      headers: {
-        "x-api-key": process.env.API_KEY,
-      },
-    });
+    );
 
     expect(createResponse.status()).toBe(201);
 
@@ -58,7 +81,7 @@ test.describe("API + UI + Network Interception", () => {
     await page.route("**/collections/products/records**", async (route) => {
       const response = await route.fetch();
 
-      const body = await response.json();
+      const body: ProductCollectionResponse = await response.json();
 
       body.data[0].data.name = "Mocked Product";
 

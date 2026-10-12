@@ -3,11 +3,38 @@ import { headers } from "../../test-data/headers";
 import { createBookingNegativeData } from "../../test-data/createBookingNegative";
 import { payload } from "../../test-data/payload";
 
+interface BookingIdRecord {
+  bookingid: number;
+}
+
+interface BookingDetails {
+  [field: string]: unknown;
+  firstname: string;
+  lastname: string;
+  totalprice: number;
+  depositpaid: boolean;
+  bookingdates: {
+    checkin: string;
+    checkout: string;
+  };
+  additionalneeds: string;
+}
+
+interface CreatedBookingResponse {
+  bookingid: number;
+  booking: BookingDetails;
+}
+
+interface MutableBookingPayload {
+  [field: string]: unknown;
+  bookingdates: Record<string, unknown>;
+}
+
 test.describe("Get Booking", () => {
   test("Get all bookings", async ({ bookingAPI }) => {
     const response = await bookingAPI.getAllBookings();
     expect(response.status()).toBe(200);
-    const responseBody = await response.json();
+    const responseBody: BookingIdRecord[] = await response.json();
     //console.log(responseBody);
     responseBody.forEach((body) => expect(body).toHaveProperty("bookingid"));
   });
@@ -15,7 +42,7 @@ test.describe("Get Booking", () => {
   test("Get booking using valid booking ID", async ({ bookingAPI }) => {
     const response = await bookingAPI.getBookingUsingID(5);
     expect(response.status()).toBe(200);
-    const responseBody = await response.json();
+    const responseBody: unknown = await response.json();
     console.log(responseBody);
     expect(responseBody).toBeTruthy();
   });
@@ -35,7 +62,7 @@ test.describe("Create Booking", () => {
   test("Create booking with valid data", async ({ bookingAPI }) => {
     const response = await bookingAPI.createBooking(payload);
     expect(response.status()).toBe(200);
-    const responseBody = await response.json();
+    const responseBody: CreatedBookingResponse = await response.json();
     //console.log(responseBody);
     expect(responseBody).toHaveProperty("bookingid");
     expect(responseBody).toHaveProperty("booking");
@@ -74,13 +101,13 @@ test.describe("Create Booking", () => {
     const response = await bookingAPI.createBooking(pld);
 
     expect(response.status()).toBe(200);
-    const responseBody = await response.json();
+    const responseBody: unknown = await response.json();
     //console.log(responseBody);
     //it accepted string and using null
   });
 
   test("Create booking with null values", async ({ bookingAPI }) => {
-    const pld = { ...payload };
+    const pld: MutableBookingPayload = { ...payload };
 
     pld.firstname = null;
     pld.lastname = null;
@@ -108,13 +135,13 @@ test.describe("Create Booking", () => {
 
 test.describe("Update Booking", () => {
   test("Update complete booking", async ({ authHeader, bookingAPI }) => {
-    const pld = { ...payload };
+    const pld: BookingDetails = { ...payload };
     pld.firstname = "James";
     pld.totalprice = 1111;
     const response = await bookingAPI.updateBooking(8, pld, authHeader);
 
     expect(response.status()).toBe(200);
-    const responseBody = await response.json();
+    const responseBody: BookingDetails = await response.json();
     console.log(responseBody);
     expect(responseBody.firstname).toBe("James");
     expect(responseBody.totalprice).toBe(1111);
@@ -138,7 +165,7 @@ test.describe("Update Booking", () => {
     authHeader,
     bookingAPI,
   }) => {
-    const pld = { ...payload };
+    const pld: BookingDetails = { ...payload };
 
     pld.firstname = "James";
     pld.totalprice = 1111;
@@ -150,7 +177,7 @@ test.describe("Update Booking", () => {
     bookingAPI,
     authHeader,
   }) => {
-    const pld = { ...payload };
+    const pld: BookingDetails = { ...payload };
 
     pld.firstname = "James";
     pld.totalprice = 1111;
@@ -172,7 +199,7 @@ test.describe("Update Booking", () => {
     bookingAPI,
     authHeader,
   }) => {
-    const pld = { ...payload };
+    const pld: Record<string, unknown> = { ...payload };
 
     pld.firstname = 123;
     pld.totalprice = 111;
@@ -203,7 +230,7 @@ test.describe("Update Booking", () => {
 
 test.describe("Partial update Booking", () => {
   test("Update firstname", async ({ authHeader, bookingAPI }) => {
-    const pld = {
+    const pld: Pick<BookingDetails, "firstname"> = {
       firstname: payload.firstname,
     };
 
@@ -212,13 +239,14 @@ test.describe("Partial update Booking", () => {
     const response = await bookingAPI.partialUpdateBooking(5, pld, authHeader);
 
     expect(response.status()).toBe(200);
-    const responseBody = await response.json();
+    const responseBody: Pick<BookingDetails, "firstname"> =
+      await response.json();
     //console.log(responseBody);
     expect(responseBody.firstname).toBe("Test");
   });
 
   test("Update lastname", async ({ authHeader, bookingAPI }) => {
-    const pld = {
+    const pld: Pick<BookingDetails, "lastname"> = {
       lastname: payload.lastname,
     };
 
@@ -227,13 +255,14 @@ test.describe("Partial update Booking", () => {
     const response = await bookingAPI.partialUpdateBooking(5, pld, authHeader);
 
     expect(response.status()).toBe(200);
-    const responseBody = await response.json();
+    const responseBody: Pick<BookingDetails, "lastname"> =
+      await response.json();
     //console.log(responseBody);
     expect(responseBody.lastname).toBe("Test");
   });
 
   test("Update Invalid booking ID", async ({ authHeader, bookingAPI }) => {
-    const pld = {
+    const pld: Pick<BookingDetails, "lastname"> = {
       lastname: payload.lastname,
     };
 
@@ -254,9 +283,15 @@ test("Delete existing booking", async ({ authHeader, bookingAPI }) => {
 });
 
 test("Delete already deleted booking", async ({ authHeader, bookingAPI }) => {
-  const response1 = await bookingAPI.deleteBooking(3, authHeader);
+  const createResponse = await bookingAPI.createBooking(payload);
+  expect(createResponse.status()).toBe(200);
+  const createdBooking: CreatedBookingResponse = await createResponse.json();
+  const bookingId = createdBooking.bookingid;
+  expect(bookingId).toBeTruthy();
+
+  const response1 = await bookingAPI.deleteBooking(bookingId, authHeader);
   expect(response1.status()).toBe(201);
-  const response2 = await bookingAPI.deleteBooking(3, authHeader);
+  const response2 = await bookingAPI.deleteBooking(bookingId, authHeader);
   expect(response2.status()).toBe(405);
 });
 test("Delete invalid booking ID", async ({ authHeader, bookingAPI }) => {

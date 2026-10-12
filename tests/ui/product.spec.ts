@@ -1,5 +1,6 @@
 import { test, expect } from "../../fixtures/fixtures";
 import { users } from "../../test-data/users";
+
 test.beforeEach("Launch Site and Login", async ({ loginPage }) => {
   console.log("Launching site...");
   await loginPage.launchSite();
@@ -26,7 +27,7 @@ test.describe("Verify first product informations", () => {
   test("Verify product image", async ({ productPage }) => {
     console.log("Verifying product image");
     const productImage = productPage.getProductImage();
-    expect(productImage).toHaveAttribute(
+    await expect(productImage).toHaveAttribute(
       "src",
       /sauce-backpack.*\.(jpg|jpeg|png)$/,
     );
@@ -90,12 +91,15 @@ test("Verify Navigated to product details page", async ({ productPage }) => {
   expect(obj.url).toContain("id");
   await expect(obj.button).toBeVisible();
 });
-test("Verify Navigated back to product list page", async ({ productPage }) => {
+test("Verify Navigated back to product list page", async ({
+  productPage,
+  page,
+}) => {
   console.log("Verifying navigated back to product list page");
   const detailsPage = await productPage.navigateToProductDetails();
   expect(detailsPage.url).toContain("inventory-item");
   await expect(detailsPage.button).toBeVisible();
   const inventoryList = await productPage.navigateBackToProductList();
   await expect(inventoryList).toBeVisible();
-  expect(productPage.page.url()).toContain("inventory");
+  expect(page.url()).toContain("inventory");
 });

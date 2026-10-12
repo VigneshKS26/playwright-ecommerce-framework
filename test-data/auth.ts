@@ -32,4 +32,4 @@ export const invalidAuthData = [
     status: 200,
     reason: "Bad credentials",
   },
-];
+] as const;

@@ -1,5 +1,6 @@
 import { test, expect } from "../../fixtures/fixtures";
 import { users } from "../../test-data/users";
+
 test.beforeEach("Launch Site and Login", async ({ loginPage }) => {
   console.log("Launching site...");
   await loginPage.launchSite();
@@ -40,10 +41,10 @@ test("Add multiple products to cart Remove some from cart", async ({
   cartPage,
 }) => {
   console.log("Verifying remove multiple products from cart");
+  ///////////////
   for (let i = 0; i < 3; i++) {
     await cartPage.addProductToCart(i);
   }
-  ///////////////
   await cartPage.removeAllProductsFromCart();
   const catchLocator = cartPage.cartBadgeIsNotAttached();
   await expect(catchLocator).not.toBeAttached();

@@ -1,11 +1,16 @@
+import type { APIRequestContext, APIResponse } from "@playwright/test";
 import { BaseAPI } from "./BaseAPI";
 
 export class AuthAPI extends BaseAPI {
-  constructor(request) {
+  constructor(request: APIRequestContext) {
     super(request);
   }
 
-  async authenticate(username, password, headers = {}) {
+  async authenticate(
+    username?: string,
+    password?: string,
+    headers: Record<string, string> = {},
+  ): Promise<APIResponse> {
     return await this.request.post(`${this.baseURL}/auth`, {
       data: {
         username,
@@ -14,7 +19,7 @@ export class AuthAPI extends BaseAPI {
       headers,
     });
   }
-  async getAuth(username, password) {
+  async getAuth(username: string, password: string): Promise<string> {
     const response = await this.request.post(`${this.baseURL}/auth`, {
       data: {
         username,

@@ -1,6 +1,6 @@
 # Playwright E-Commerce Automation Framework
 
-This project started as a Playwright UI automation framework for SauceDemo and gradually evolved into a complete automation framework covering UI testing, API testing, API + UI integration testing, network interception, and CI/CD execution through GitHub Actions.
+This project started as a Playwright UI automation framework for SauceDemo and gradually evolved into a TypeScript automation framework covering UI testing, API testing, API + UI integration testing, network interception, and CI/CD execution through GitHub Actions.
 
 The goal of this project was not only to automate test cases but also to practice building a maintainable framework using Page Object Model, reusable fixtures, centralized test data, and API abstraction layers.
 
@@ -64,26 +64,35 @@ This helps test frontend behavior without depending on backend changes.
 ```text
 pages
 ├── ui
-│   ├── LoginPage
-│   ├── ProductPage
-│   ├── CartPage
-│   └── CheckoutPage
+│   ├── BasePage.ts
+│   ├── LoginPage.ts
+│   ├── ProductPage.ts
+│   ├── CartPage.ts
+│   └── CheckoutPage.ts
 │
 └── api
-    ├── AuthAPI
-    └── BookingAPI
+    ├── BaseAPI.ts
+    ├── AuthAPI.ts
+    └── BookingAPI.ts
 
 fixtures
-└── fixtures.js
+└── fixtures.ts
 
 test-data
-└── reusable test data
+└── reusable TypeScript test data
 
 tests
-├── ui
-├── api
-└── integration
+├── ui/*.spec.ts
+├── api/*.spec.ts
+└── integration/*.spec.ts
+
+utils
+└── assertions.ts
+
+playwright.config.ts
 ```
+
+Page objects under `pages/ui` and `pages/api` are TypeScript classes. Shared Playwright fixtures, test data, assertions, test specifications, and configuration are also TypeScript.
 
 ---
 
@@ -118,8 +127,8 @@ Current pipeline:
 
 - Install dependencies
 - Cache Playwright browsers
-- Execute UI tests
-- Execute API tests
+- Execute UI and API tests on pushes and manual dispatches
+- Execute subscription-dependent integration tests only on manual dispatch when `RUN_SUBSCRIPTION_TESTS` is set to `true`
 - Upload Playwright reports
 
 ---
@@ -127,7 +136,7 @@ Current pipeline:
 ## Tech Stack
 
 - Playwright
-- JavaScript
+- TypeScript
 - Node.js
 - REST API Testing
 - GitHub Actions
@@ -140,7 +149,13 @@ Current pipeline:
 Install dependencies:
 
 ```bash
-npm install
+npm ci
+```
+
+Run the TypeScript check:
+
+```bash
+npm run typecheck
 ```
 
 Run UI tests:
@@ -161,17 +176,27 @@ Run Integration tests:
 npx playwright test tests/integration
 ```
 
+Integration prerequisites: the account must have an active subscription. `PROJECT_URL`, `API_URL`, and `API_KEY` must match that subscribed project, and `EMAIL` and `PASSWORD` must be credentials for its account. Locally, put these values in `.env`; the integration spec loads that file. In GitHub Actions, configure the values as repository secrets. The integration job is skipped on normal pushes and runs only on manual workflow dispatch when the repository variable `RUN_SUBSCRIPTION_TESTS` is set to `true`. The full-suite command below includes integration tests, so that part may fail or be unavailable without the required subscription and matching environment.
+
+The Playwright configuration separately loads `.env.${ENV || "test"}` (for example, `.env.test` when `ENV` is unset).
+
 Run all tests:
 
 ```bash
 npx playwright test
 ```
 
+Open the HTML report after a test run:
+
+```bash
+npx playwright show-report
+```
+
 ---
 
 ## What I Learned While Building This
 
-- Playwright UI Automation
+- Playwright UI Automation with TypeScript
 - API Testing using Playwright Request Context
 - Framework Design
 - Page Object Model
@@ -197,4 +222,4 @@ npx playwright test
 
 QA Automation Engineer
 
-Playwright | API Testing | JavaScript | Selenium | CI/CD
+Playwright | API Testing | TypeScript | Selenium | CI/CD

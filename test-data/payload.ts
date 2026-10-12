@@ -8,4 +8,4 @@ export const payload = {
     checkout: "2019-01-01",
   },
   additionalneeds: "Breakfast",
-};
+} as const;

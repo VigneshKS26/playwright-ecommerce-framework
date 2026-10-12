@@ -1,7 +1,18 @@
+import type { Locator, Page } from "@playwright/test";
 import { BasePage } from "./BasePage";
 import { expect } from "@playwright/test";
+
 export class ProductPage extends BasePage {
-  constructor(page) {
+  inventoryList: Locator;
+  productList: Locator;
+  product: Locator;
+  productName: Locator;
+  productPrice: Locator;
+  productImage: Locator;
+  sortButton: Locator;
+  backToProductButton: Locator;
+
+  constructor(page: Page) {
     super(page);
     this.inventoryList = page.locator('[data-test="inventory-list"]');
     this.productList = page.locator(".inventory_item");
@@ -15,34 +26,34 @@ export class ProductPage extends BasePage {
     this.backToProductButton = page.locator("#back-to-products");
   }
 
-  getProductList() {
+  getProductList(): Locator {
     return this.inventoryList;
   }
-  getProductName() {
+  getProductName(): Locator {
     return this.productName;
   }
-  async getProductPrice() {
+  async getProductPrice(): Promise<string | null> {
     return await this.productPrice.textContent();
   }
-  getProductImage() {
+  getProductImage(): Locator {
     return this.productImage;
   }
-  getAllProductsImages() {
+  getAllProductsImages(): Locator {
     return this.productImage;
   }
-  getAllProductsPrices() {
+  getAllProductsPrices(): Locator {
     return this.productPrice;
   }
-  async waitForInventoryToLoad() {
+  async waitForInventoryToLoad(): Promise<void> {
     await expect(this.inventoryList).toBeVisible();
   }
-  async getInventoryCount() {
+  async getInventoryCount(): Promise<number> {
     await this.waitForInventoryToLoad();
     return await this.productList.count();
   }
-  async getSortingListA_Z() {
+  async getSortingListA_Z(): Promise<(string | null)[]> {
     await this.sortButton.selectOption("Name (A to Z)");
-    let productNames = [];
+    const productNames: (string | null)[] = [];
     for (let i = 0; i < (await this.productList.count()); i++) {
       productNames.push(
         await this.productList
@@ -53,9 +64,9 @@ export class ProductPage extends BasePage {
     }
     return productNames;
   }
-  async getSortingListZ_A() {
+  async getSortingListZ_A(): Promise<(string | null)[]> {
     await this.sortButton.selectOption("Name (Z to A)");
-    let productNames = [];
+    const productNames: (string | null)[] = [];
     for (let i = 0; i < (await this.productList.count()); i++) {
       productNames.push(
         await this.productList
@@ -66,45 +77,41 @@ export class ProductPage extends BasePage {
     }
     return productNames;
   }
-  async getSortingPriceLow_High() {
+  async getSortingPriceLow_High(): Promise<number[]> {
     await this.sortButton.selectOption("Price (low to high)");
-    let productPrice = [];
+    const productPrice: number[] = [];
     for (let i = 0; i < (await this.productList.count()); i++) {
       productPrice.push(
         Number(
-          (
-            await this.productList
-              .nth(i)
-              .locator(".inventory_item_price")
-              .textContent()
-          ).slice(1),
+          (await this.productList
+            .nth(i)
+            .locator(".inventory_item_price")
+            .textContent())!.slice(1),
         ),
       );
     }
     return productPrice;
   }
-  async getSortingPriceHigh_Low() {
+  async getSortingPriceHigh_Low(): Promise<number[]> {
     await this.sortButton.selectOption("Price (high to low)");
-    let productPrice = [];
+    const productPrice: number[] = [];
     for (let i = 0; i < (await this.productList.count()); i++) {
       productPrice.push(
         Number(
-          (
-            await this.productList
-              .nth(i)
-              .locator(".inventory_item_price")
-              .textContent()
-          ).slice(1),
+          (await this.productList
+            .nth(i)
+            .locator(".inventory_item_price")
+            .textContent())!.slice(1),
         ),
       );
     }
     return productPrice;
   }
-  async navigateToProductDetails() {
+  async navigateToProductDetails(): Promise<{ url: string; button: Locator }> {
     await this.productName.filter({ hasText: "Sauce Labs Backpack" }).click();
     return { url: this.page.url(), button: this.backToProductButton };
   }
-  async navigateBackToProductList() {
+  async navigateBackToProductList(): Promise<Locator> {
     await this.backToProductButton.click();
     return this.inventoryList;
   }
