@@ -11,15 +11,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image with cache
+        uses: docker/build-push-action@v6
         with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: package-lock.json
+          context: .
+          load: true
+          tags: playwright-ecommerce:latest
+          cache-from: type=gha,scope=playwright-typecheck
+          cache-to: type=gha,mode=max,scope=playwright-typecheck
 
-      - run: npm ci
-
-      - run: npm run typecheck
+      - name: Run TypeScript typecheck
+        run: docker run --rm playwright-ecommerce:latest npm run typecheck
 
   ui-tests:
     runs-on: ubuntu-latest
@@ -27,28 +32,45 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image with cache
+        uses: docker/build-push-action@v6
         with:
-          node-version: 22
-          cache: npm
+          context: .
+          load: true
+          tags: playwright-ecommerce:latest
+          cache-from: type=gha,scope=playwright-ui
+          cache-to: type=gha,mode=max,scope=playwright-ui
 
-      - name: Cache Playwright Browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Prepare report directories
+        run: mkdir -p playwright-report test-results
 
-      - run: npm ci
+      - name: Run UI tests in Docker
+        run: |
+          docker run --rm \
+            -e CI=true \
+            -v "$PWD/playwright-report:/app/playwright-report" \
+            -v "$PWD/test-results:/app/test-results" \
+            playwright-ecommerce:latest \
+            npx playwright test tests/ui
 
-      - run: npx playwright install --with-deps
-
-      - run: npx playwright test tests/ui
-
-      - uses: actions/upload-artifact@v4
+      - name: Upload UI test report
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: ui-playwright-report
           path: playwright-report/
+          if-no-files-found: ignore
+
+      - name: Upload UI test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-test-results
+          path: test-results/
+          if-no-files-found: ignore
 
   api-tests:
     runs-on: ubuntu-latest
@@ -56,28 +78,45 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image with cache
+        uses: docker/build-push-action@v6
         with:
-          node-version: 22
-          cache: npm
+          context: .
+          load: true
+          tags: playwright-ecommerce:latest
+          cache-from: type=gha,scope=playwright-api
+          cache-to: type=gha,mode=max,scope=playwright-api
 
-      - name: Cache Playwright Browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Prepare report directories
+        run: mkdir -p playwright-report test-results
 
-      - run: npm ci
+      - name: Run API tests in Docker
+        run: |
+          docker run --rm \
+            -e CI=true \
+            -v "$PWD/playwright-report:/app/playwright-report" \
+            -v "$PWD/test-results:/app/test-results" \
+            playwright-ecommerce:latest \
+            npx playwright test tests/api
 
-      - run: npx playwright install --with-deps
-
-      - run: npx playwright test tests/api
-
-      - uses: actions/upload-artifact@v4
+      - name: Upload API test report
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: api-playwright-report
           path: playwright-report/
+          if-no-files-found: ignore
+
+      - name: Upload API test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-results
+          path: test-results/
+          if-no-files-found: ignore
 
   integration-tests:
     if: ${{ github.event_name == 'workflow_dispatch' && vars.RUN_SUBSCRIPTION_TESTS == 'true' }}
@@ -93,25 +132,47 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image with cache
+        uses: docker/build-push-action@v6
         with:
-          node-version: 22
-          cache: npm
+          context: .
+          load: true
+          tags: playwright-ecommerce:latest
+          cache-from: type=gha,scope=playwright-integration
+          cache-to: type=gha,mode=max,scope=playwright-integration
 
-      - name: Cache Playwright Browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Prepare report directories
+        run: mkdir -p playwright-report test-results
 
-      - run: npm ci
+      - name: Run integration tests in Docker
+        run: |
+          docker run --rm \
+            -e CI=true \
+            -e API_URL \
+            -e API_KEY \
+            -e PROJECT_URL \
+            -e EMAIL \
+            -e PASSWORD \
+            -v "$PWD/playwright-report:/app/playwright-report" \
+            -v "$PWD/test-results:/app/test-results" \
+            playwright-ecommerce:latest \
+            npx playwright test tests/integration
 
-      - run: npx playwright install --with-deps
-
-      - run: npx playwright test tests/integration
-
-      - uses: actions/upload-artifact@v4
+      - name: Upload integration test report
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: integration-playwright-report
           path: playwright-report/
+          if-no-files-found: ignore
+
+      - name: Upload integration test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-results
+          path: test-results/
+          if-no-files-found: ignore
