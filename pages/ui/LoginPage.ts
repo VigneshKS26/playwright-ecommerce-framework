@@ -1,25 +1,16 @@
-import type { Locator, Page } from "@playwright/test";
+import type { Locator } from "@playwright/test";
 import { BasePage } from "./BasePage";
 
 export class LoginPage extends BasePage {
-  inputUsername: Locator;
-  inputPassword: Locator;
-  loginButton: Locator;
-  menuButton: Locator;
-  logoutOption: Locator;
-  errorMessage: Locator;
-  pageTitle: Locator;
-
-  constructor(page: Page) {
-    super(page);
-    this.inputUsername = page.getByPlaceholder("Username");
-    this.inputPassword = page.getByPlaceholder("Password");
-    this.loginButton = page.getByRole("button", { name: "Login" });
-    this.menuButton = page.locator("#react-burger-menu-btn");
-    this.logoutOption = page.getByText("Logout");
-    this.errorMessage = page.locator('[data-test="error"]');
-    this.pageTitle = page.locator(".title");
-  }
+  readonly inputUsername: Locator = this.page.getByPlaceholder("Username");
+  readonly inputPassword: Locator = this.page.getByPlaceholder("Password");
+  readonly loginButton: Locator = this.page.getByRole("button", {
+    name: "Login",
+  });
+  readonly menuButton: Locator = this.page.locator("#react-burger-menu-btn");
+  readonly logoutOption: Locator = this.page.getByText("Logout");
+  readonly errorMessage: Locator = this.page.locator('[data-test="error"]');
+  readonly pageTitle: Locator = this.page.locator(".title");
 
   async loginUser(username: string, password: string): Promise<void> {
     await this.inputUsername.fill(username);

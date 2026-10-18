@@ -1,28 +1,23 @@
-import type { Locator, Page } from "@playwright/test";
+import type { Locator } from "@playwright/test";
 import { BasePage } from "./BasePage";
 import { expect } from "@playwright/test";
 
 export class CartPage extends BasePage {
-  addToCartButton: Locator;
-  cartBadgeNumber: Locator;
-  removeFromCartButton: Locator;
-  cartButton: Locator;
-  productsInCart: Locator;
-  productsQuantity: Locator;
-  continueShoppingButton: Locator;
-  productNameInCart: Locator;
-
-  constructor(page: Page) {
-    super(page);
-    this.addToCartButton = page.getByRole("button", { name: "Add to Cart" });
-    this.cartBadgeNumber = page.locator(".shopping_cart_badge");
-    this.removeFromCartButton = page.getByRole("button", { name: "Remove" });
-    this.cartButton = page.locator(".shopping_cart_link");
-    this.productsInCart = page.locator(".cart_item");
-    this.productsQuantity = page.locator(".cart_quantity");
-    this.continueShoppingButton = page.locator("#continue-shopping");
-    this.productNameInCart = page.locator(".inventory_item_name");
-  }
+  readonly addToCartButton: Locator = this.page.getByRole("button", {
+    name: "Add to Cart",
+  });
+  readonly cartBadgeNumber: Locator = this.page.locator(".shopping_cart_badge");
+  readonly removeFromCartButton: Locator = this.page.getByRole("button", {
+    name: "Remove",
+  });
+  readonly cartButton: Locator = this.page.locator(".shopping_cart_link");
+  readonly productsInCart: Locator = this.page.locator(".cart_item");
+  readonly productsQuantity: Locator = this.page.locator(".cart_quantity");
+  readonly continueShoppingButton: Locator =
+    this.page.locator("#continue-shopping");
+  readonly productNameInCart: Locator = this.page.locator(
+    ".inventory_item_name",
+  );
 
   async addProductToCart(i: number): Promise<void> {
     await this.addToCartButton.nth(i).click();

@@ -1,11 +1,7 @@
-import type { APIRequestContext, APIResponse } from "@playwright/test";
+import type { APIResponse } from "@playwright/test";
 import { BaseAPI } from "./BaseAPI";
 
 export class AuthAPI extends BaseAPI {
-  constructor(request: APIRequestContext) {
-    super(request);
-  }
-
   async authenticate(
     username?: string,
     password?: string,

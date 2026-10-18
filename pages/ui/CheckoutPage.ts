@@ -1,33 +1,28 @@
-import type { Locator, Page } from "@playwright/test";
+import type { Locator } from "@playwright/test";
 import { BasePage } from "./BasePage";
 
 export class CheckoutPage extends BasePage {
-  checkOutButton: Locator;
-  enterFirstName: Locator;
-  enterLastName: Locator;
-  enterZipCode: Locator;
-  errorMessage: Locator;
-  cancelButton: Locator;
-  continueButton: Locator;
-  pageTitle: Locator;
-  productNameBeforeFinish: Locator;
-  finishButton: Locator;
-  orderMessage: Locator;
+  readonly checkOutButton: Locator = this.page.locator("#checkout");
+  readonly enterFirstName: Locator = this.page.getByPlaceholder("First Name");
+  readonly enterLastName: Locator = this.page.getByPlaceholder("Last Name");
+  readonly enterZipCode: Locator =
+    this.page.getByPlaceholder("Zip/Postal Code");
+  readonly errorMessage: Locator = this.page.locator('[data-test="error"]');
+  readonly cancelButton: Locator = this.page.getByRole("button", {
+    name: "Cancel",
+  });
+  readonly continueButton: Locator = this.page.getByRole("button", {
+    name: "Continue",
+  });
+  readonly pageTitle: Locator = this.page.locator(".title");
+  readonly productNameBeforeFinish: Locator = this.page.locator(
+    ".inventory_item_name",
+  );
+  readonly finishButton: Locator = this.page.getByRole("button", {
+    name: "Finish",
+  });
+  readonly orderMessage: Locator = this.page.locator(".complete-header");
 
-  constructor(page: Page) {
-    super(page);
-    this.checkOutButton = page.locator("#checkout");
-    this.enterFirstName = page.getByPlaceholder("First Name");
-    this.enterLastName = page.getByPlaceholder("Last Name");
-    this.enterZipCode = page.getByPlaceholder("Zip/Postal Code");
-    this.errorMessage = page.locator('[data-test="error"]');
-    this.cancelButton = page.getByRole("button", { name: "Cancel" });
-    this.continueButton = page.getByRole("button", { name: "Continue" });
-    this.pageTitle = page.locator(".title");
-    this.productNameBeforeFinish = page.locator(".inventory_item_name");
-    this.finishButton = page.getByRole("button", { name: "Finish" });
-    this.orderMessage = page.locator(".complete-header");
-  }
   async clickOnCheckout(): Promise<void> {
     await this.checkOutButton.click();
   }

@@ -1,12 +1,8 @@
-import type { APIRequestContext, APIResponse } from "@playwright/test";
+import type { APIResponse } from "@playwright/test";
 import { headers } from "../../test-data/headers";
 import { BaseAPI } from "./BaseAPI";
 
 export class BookingAPI extends BaseAPI {
-  constructor(request: APIRequestContext) {
-    super(request);
-  }
-
   async getAllBookings(): Promise<APIResponse> {
     const response = await this.request.get(`${this.baseURL}/booking`);
     return response;

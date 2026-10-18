@@ -1,30 +1,23 @@
-import type { Locator, Page } from "@playwright/test";
+import type { Locator } from "@playwright/test";
 import { BasePage } from "./BasePage";
 import { expect } from "@playwright/test";
 
 export class ProductPage extends BasePage {
-  inventoryList: Locator;
-  productList: Locator;
-  product: Locator;
-  productName: Locator;
-  productPrice: Locator;
-  productImage: Locator;
-  sortButton: Locator;
-  backToProductButton: Locator;
-
-  constructor(page: Page) {
-    super(page);
-    this.inventoryList = page.locator('[data-test="inventory-list"]');
-    this.productList = page.locator(".inventory_item");
-    this.product = page.locator(".inventory_item").filter({
-      has: page.getByText("Sauce Labs Backpack"),
-    });
-    this.productName = this.product.locator(".inventory_item_name");
-    this.productPrice = this.product.locator(".inventory_item_price");
-    this.productImage = this.product.locator("img");
-    this.sortButton = page.locator(".product_sort_container");
-    this.backToProductButton = page.locator("#back-to-products");
-  }
+  readonly inventoryList: Locator = this.page.locator(
+    '[data-test="inventory-list"]',
+  );
+  readonly productList: Locator = this.page.locator(".inventory_item");
+  readonly product: Locator = this.page.locator(".inventory_item").filter({
+    has: this.page.getByText("Sauce Labs Backpack"),
+  });
+  readonly productName: Locator = this.product.locator(".inventory_item_name");
+  readonly productPrice: Locator = this.product.locator(
+    ".inventory_item_price",
+  );
+  readonly productImage: Locator = this.product.locator("img");
+  readonly sortButton: Locator = this.page.locator(".product_sort_container");
+  readonly backToProductButton: Locator =
+    this.page.locator("#back-to-products");
 
   getProductList(): Locator {
     return this.inventoryList;
