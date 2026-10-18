@@ -278,22 +278,34 @@ test.describe("Partial update Booking", () => {
 });
 
 test("Delete existing booking", async ({ authHeader, bookingAPI }) => {
-  const response = await bookingAPI.deleteBooking(4, authHeader);
+  const createResponse = await bookingAPI.createBooking(payload);
+  expect(createResponse.status()).toBe(200);
+
+  const createdBooking: CreatedBookingResponse = await createResponse.json();
+
+  const bookingId = createdBooking.bookingid;
+  expect(bookingId).toBeTruthy();
+
+  const response = await bookingAPI.deleteBooking(bookingId, authHeader);
   expect(response.status()).toBe(201);
 });
 
 test("Delete already deleted booking", async ({ authHeader, bookingAPI }) => {
   const createResponse = await bookingAPI.createBooking(payload);
   expect(createResponse.status()).toBe(200);
+
   const createdBooking: CreatedBookingResponse = await createResponse.json();
+
   const bookingId = createdBooking.bookingid;
   expect(bookingId).toBeTruthy();
 
   const response1 = await bookingAPI.deleteBooking(bookingId, authHeader);
   expect(response1.status()).toBe(201);
+
   const response2 = await bookingAPI.deleteBooking(bookingId, authHeader);
   expect(response2.status()).toBe(405);
 });
+
 test("Delete invalid booking ID", async ({ authHeader, bookingAPI }) => {
   const response = await bookingAPI.deleteBooking("abcd", authHeader);
   expect(response.status()).toBe(405);
